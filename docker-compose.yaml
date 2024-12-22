@@ -1,0 +1,40 @@
+version: '3.9'
+
+services:
+  database:
+    image: mysql:8
+    container_name: mysql-db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: nodedb
+      MYSQL_USER: khalid
+      MYSQL_PASSWORD: root1234
+    ports:
+      - "3306:3306"  # Expose MySQL on port 3306
+    volumes:
+      - "C:/Users/khalid Bouhssine/Desktop/save:/var/lib/mysql"  # Persistent data storage
+
+  nodejs:
+    image: node:18
+    container_name: nodejs-dev
+    working_dir: /usr/src/app
+    volumes:
+      - "C:/Users/khalid Bouhssine/Desktop/eidia/app:/usr/src/app"
+      - "/usr/src/app/node_modules"  # Prevents overriding node_modules on the host
+    ports:
+      - "3000:3000"  # Expose your application on port 3000
+    command: sh -c "npm install && node index.js"  # Install and run
+    depends_on:
+      - database  # Ensure the database starts before this service
+
+  vscode:
+    image: codercom/code-server:latest
+    container_name: vscode-server
+    environment:
+      PASSWORD: "1234"  # Make sure this password is secure
+    volumes:
+      - "C:/Users/khalid Bouhssine/Desktop/eidia/app:/home/coder/project"
+    ports:
+      - "8080:8080"  # Expose VS Code server on port 8080
+    depends_on:
+      - nodejs  # Ensure the app starts before this service
